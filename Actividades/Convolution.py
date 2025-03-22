@@ -7,21 +7,24 @@ de la imagen cat que se utiliza dentro del codigo, si no es correcta actualizar 
 utilizar el programa dandole click a ejecutar. Se desplegara una ventana con la imagen original y la imagen con el filtro aplicado.
 """
 
-import numpy as np                # Librería para operaciones numéricas y matrices
-import cv2                       # Librería OpenCV para procesamiento de imágenes
-import matplotlib.pyplot as plt  # Librería para mostrar imágenes gráficamente
+# Importación de librerías necesarias para el codigo
+import numpy as np            
+import cv2                      
+import matplotlib.pyplot as plt
 
+# Función en donde se realiza convolución, que recibe como parametro la imagen en escala de grises y el kernel que quiere ser aplicado,
+# en nuestro caso el filtro Sobel
 def my_convolution(image_gray, kernel):
 
-    # Obtener dimensiones de la imagen y del filtro
+    # Obtener dimensiones de matriz de la imagen y del filtro
     img_height, img_width = image_gray.shape
     kernel_height, kernel_width = kernel.shape
 
-    # Calcular dimensiones de la imagen de salida (sin padding)
+    # Calcular dimensiones de la matriz de la imagen de salida
     output_height = img_height - kernel_height + 1
     output_width = img_width - kernel_width + 1
 
-    # Inicializar matriz de salida con ceros (en float para precisión)
+    # Inicializar matriz de salida con ceros
     output = np.zeros((output_height, output_width), dtype=np.float32)
 
     # Realizar la convolución: recorrer cada posición válida de la imagen
@@ -37,28 +40,28 @@ def my_convolution(image_gray, kernel):
     # Asegurar que los valores estén entre 0 y 255 (rango de imagen)
     output = np.clip(output, 0, 255)
 
-    # Retornar la imagen convertida a tipo uint8 (valores enteros de 0-255)
+    # Retornar la matriz de la imagen nueva con el filtro aplicado
     return output.astype(np.uint8)
 
 if __name__ == '__main__':
     # Especificar la ruta de la imagen a procesar
-    image_path = r'Actividades/cat.jpg'  # Puedes cambiar este nombre por cualquier imagen que tengas
+    image_path = r'Actividades/cat.jpg'
 
-    # Leer la imagen en formato BGR (por defecto en OpenCV)
+    # Leer la imagen
     image_bgr = cv2.imread(image_path)
 
     # Verificar que la imagen se haya cargado correctamente
     if image_bgr is None:
         print("Error: No se pudo cargar la imagen.")
-        exit()  # Salir del programa si la imagen no existe
+        exit() 
 
-    # Convertir imagen de BGR (OpenCV) a RGB (para matplotlib)
+    # Convertir imagen de BGR a RGB
     image_rgb = cv2.cvtColor(image_bgr, cv2.COLOR_BGR2RGB)
 
     # Convertir la imagen a escala de grises para aplicar convolución
     image_gray = cv2.cvtColor(image_bgr, cv2.COLOR_BGR2GRAY)
 
-    # Definir un filtro Sobel para detectar bordes horizontales
+    # Definir kernel de filtro Sobel para detectar bordes horizontales
     sobel_kernel = np.array([
         [-1, 0, 1],
         [-2, 0, 2],
@@ -69,7 +72,7 @@ if __name__ == '__main__':
     resultado = my_convolution(image_gray, sobel_kernel)
 
     # Mostrar la imagen original (color) y el resultado (gris) lado a lado
-    plt.figure(figsize=(12, 6))  # Tamaño de la figura (ancho x alto en pulgadas)
+    plt.figure(figsize=(12, 6))
 
     # Mostrar imagen original en color
     plt.subplot(1, 2, 1)  # 1 fila, 2 columnas, posición 1
@@ -80,12 +83,8 @@ if __name__ == '__main__':
     # Mostrar imagen resultante de la convolución
     plt.subplot(1, 2, 2)  # 1 fila, 2 columnas, posición 2
     plt.imshow(resultado, cmap='gray')  # Mostrar en escala de grises
-    plt.title('Resultado de Convolución (Sobel)')  # Título del subplot
+    plt.title('Resultado de Convolución (Filtro Sobel)')  # Título del subplot
     plt.axis('off')  # Ocultar ejes
 
     plt.tight_layout()  # Ajustar espacio entre las imágenes
     plt.show()  # Mostrar la ventana con ambas imágenes
-
-    # Guardar el resultado como archivo de imagen
-    cv2.imwrite('resultado_convolucion.jpg', resultado)
-    print("Imagen resultante guardada como 'resultado_convolucion.jpg'")
